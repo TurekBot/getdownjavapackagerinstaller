@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+
+
+
+
+    <!--FILLMEIN - REQUIRED-->
+    <name>Updatable App</name>
+    <!--FILLMEIN - REQUIRED-->
+    <description>Example POM that builds update directory and a native installer using the javapackager</description>
+    <!--FILLMEIN - REQUIRED-->
+    <groupId>tech.ugma</groupId>
+    <!--FILLMEIN - REQUIRED-->
+    <artifactId>getdownjavapackagerinstaller</artifactId>
+    <!--FILLMEIN - REQUIRED-->
+    <version>0.0.1-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+
+        <plugins>
+            <!-- Creates the getdown (updates goal) and getdown-stub (stub goal) directory. -->
+            <!-- The contents of the getdown directory need to go to your server (whatever is in the
+            appbase tag) so that getdown can go get it and perform an update with it.-->
+            <!--The contents of the getdown-stub directory get used for the installer.-->
+            <plugin>
+                <groupId>org.icestuff</groupId>
+                <artifactId>getdown-maven-plugin</artifactId>
+                <version>0.0.3-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>updates</goal>
+                            <goal>stub</goal>
+                            <goal>applet</goal>
+                        </goals>
+                        <configuration>
+                            <!--FILLMEIN - REQUIRED-->
+                            <appbase>http://localhost:8080/target/getdown/</appbase>
+                            <libPath>lib</libPath>
+                            <!--FILLMEIN - REQUIRED-->
+                            <mainClass>tech.ugma.education.getdown.examples.MyApp</mainClass>
+                            <outputJarVersions>false</outputJarVersions>
+                            <verbose>true</verbose>
+                            <!--OPTIONAL-->
+                            <!--<appargs>-->
+                            <!--<apparg>Some Argument</apparg>-->
+                            <!--</appargs>-->
+                            <ui>
+                                <!--FILLMEIN - REQUIRED-->
+                                <name>My App</name>
+
+                                <!--OPTIONAL CONFIGURATION:-->
+                                <icons>
+                                    <icon>${basedir}/src/main/resources/images/myapp.png</icon>
+                                </icons>
+                                <progressImage>${basedir}/src/main/resources/images/progress.png</progressImage>
+                                <backgroundImage>${basedir}/src/main/resources/images/splash.png</backgroundImage>
+                                <progress>80, 244, 196, 11</progress>
+                                <progressText>FFFFFF</progressText>
+                                <statusText>FFFFFF</statusText>
+                                <status>20, 170, 316, 64</status>
+                                <textShadow>111111</textShadow>
+                            </ui>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
+            <!-- NSIS (Nullsoft Scriptable Install System) Installer Generation -->
+            <!-- * Download and install NSIS. -->
+            <!-- 	* If NSIS is NOT installed in the default 32-bit location, C:/Program Files/NSIS/makensis.exe,
+                        put the path to makensis.exe in-between the <makensisBin> tags-->
+            <!-- * Put a license in License.txt-->
+            <!-- * Put some instructions for the user in Readme.txt-->
+            <!-- * myapp.ico, myappbanner.bmp, and myappsmall.ico can be changed as long as any reference to them in
+                    in myapp.nsi is changed as well.-->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>nsis-maven-plugin</artifactId>
+                <version>1.0-alpha-1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>generate-headerfile</goal>
+                            <goal>make</goal>
+                        </goals>
+                        <configuration>
+                            <!--Default Value: C:/Program Files/NSIS/makensis.exe-->
+                            <makensisBin>C:/Program Files (x86)/NSIS/makensis.exe</makensisBin>
+                            <!--The name of the installer-->
+                            <outputFile>${project.name}-installer.exe</outputFile>
+                            <!--Configures the NSIS installer. See NSIS documentation.-->
+                            <scriptFile>src/main/nsis/installationConfiguration.nsi</scriptFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>getdown-maven-plugin-mvn-repo</id>
+            <url>https://raw.github.com/rockfireredmoon/getdown-maven-plugin/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>
