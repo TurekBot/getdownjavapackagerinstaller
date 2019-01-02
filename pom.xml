@@ -5,12 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-
-
-
-
     <!--FILLMEIN - REQUIRED-->
-    <name>Updatable App</name>
+    <name>UpdatableApp</name>
     <!--FILLMEIN - REQUIRED-->
     <description>Example POM that builds update directory and a native installer using the javapackager</description>
     <!--FILLMEIN - REQUIRED-->
@@ -20,10 +16,18 @@
     <!--FILLMEIN - REQUIRED-->
     <version>0.0.1-SNAPSHOT</version>
 
+    <organization>
+        <!--FILLMEIN - REQUIRED-->
+        <name>Ugma Development</name>
+    </organization>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <getdown.appBase>http://localhost:8080/target/getdown/</getdown.appBase>
+        <!--FILLMEIN - REQUIRED-->
+        <project.mainClass>somePackage.MainApp</project.mainClass>
     </properties>
 
     <build>
@@ -43,14 +47,13 @@
                         <goals>
                             <goal>updates</goal>
                             <goal>stub</goal>
-                            <goal>applet</goal>
                         </goals>
                         <configuration>
                             <!--FILLMEIN - REQUIRED-->
-                            <appbase>http://localhost:8080/target/getdown/</appbase>
+                            <appbase>${getdown.appBase}</appbase>
                             <libPath>lib</libPath>
                             <!--FILLMEIN - REQUIRED-->
-                            <mainClass>tech.ugma.education.getdown.examples.MyApp</mainClass>
+                            <mainClass>${project.mainClass}</mainClass>
                             <outputJarVersions>false</outputJarVersions>
                             <verbose>true</verbose>
                             <!--OPTIONAL-->
@@ -59,19 +62,19 @@
                             <!--</appargs>-->
                             <ui>
                                 <!--FILLMEIN - REQUIRED-->
-                                <name>My App</name>
+                                <name>${project.name}</name>
 
                                 <!--OPTIONAL CONFIGURATION:-->
-                                <icons>
-                                    <icon>${basedir}/src/main/resources/images/myapp.png</icon>
-                                </icons>
-                                <progressImage>${basedir}/src/main/resources/images/progress.png</progressImage>
-                                <backgroundImage>${basedir}/src/main/resources/images/splash.png</backgroundImage>
-                                <progress>80, 244, 196, 11</progress>
-                                <progressText>FFFFFF</progressText>
-                                <statusText>FFFFFF</statusText>
-                                <status>20, 170, 316, 64</status>
-                                <textShadow>111111</textShadow>
+                                <!--<icons>-->
+                                    <!--<icon>${basedir}/src/main/resources/images/myapp.png</icon>-->
+                                <!--</icons>-->
+                                <!--<progressImage>${basedir}/src/main/resources/images/progress.png</progressImage>-->
+                                <!--<backgroundImage>${basedir}/src/main/resources/images/splash.png</backgroundImage>-->
+                                <!--<progress>80, 244, 196, 11</progress>-->
+                                <!--<progressText>FFFFFF</progressText>-->
+                                <!--<statusText>FFFFFF</statusText>-->
+                                <!--<status>20, 170, 316, 64</status>-->
+                                <!--<textShadow>111111</textShadow>-->
                             </ui>
                         </configuration>
                     </execution>
@@ -79,42 +82,74 @@
             </plugin>
 
 
-
-            <!-- NSIS (Nullsoft Scriptable Install System) Installer Generation -->
-            <!-- * Download and install NSIS. -->
-            <!-- 	* If NSIS is NOT installed in the default 32-bit location, C:/Program Files/NSIS/makensis.exe,
-                        put the path to makensis.exe in-between the <makensisBin> tags-->
-            <!-- * Put a license in License.txt-->
-            <!-- * Put some instructions for the user in Readme.txt-->
-            <!-- * myapp.ico, myappbanner.bmp, and myappsmall.ico can be changed as long as any reference to them in
-                    in myapp.nsi is changed as well.-->
-
+            <!--Installer Generation (thanks to the javapackager)-->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>nsis-maven-plugin</artifactId>
-                <version>1.0-alpha-1</version>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.8.3</version>
+                <configuration>
+                    <!--The vendor defaults to your organization's name (defined above)-->
+                    <!--<vendor></vendor>-->
+
+                    <!--In order to get the installer to launch using Getdown, we have to tell it to launch Getdown
+                    which will in turn launch our app.-->
+                    <mainClass>com.threerings.getdown.launcher.GetdownApp</mainClass>
+
+                    <appName>${project.name}-${project.version}</appName>
+                    <bundler>exe</bundler>
+
+                    <!--This tells javapackager to tell you everything it's doing. This proves helpful if you
+                    want to customize the installer using drop-in resources. Details about drop-in resources: https://docs.oracle.com/javase/8/docs/technotes/guides/deploy/self-contained-packaging.html#BCGICFDB-->
+                    <verbose>true</verbose>
+
+                    <!--For more details see this list of bundle arguments: https://docs.oracle.com/javase/9/tools/javapackager.htm#GUID-E51F9601-E121-4A50-BCA7-C7F8730078B2__WINDOWSEXEBUNDLERARGUMENTS-26C9A39C-->
+                    <bundleArguments>
+                        <!--The "EXE" bundler defaults "systemWide" to false, so here we set it true.-->
+                        <systemWide>true</systemWide>
+                        <!--Tells the packager to make a desktop shortcut when installing.-->
+                        <!--<shortcutHint>true</shortcutHint>-->
+                    </bundleArguments>
+
+
+                    <!--This tells the plugin to copy the getdown-stub folder and it's contents into the app folder (and
+                    thus into the installer). -->
+                    <additionalAppResources>${project.build.directory}/getdown-stub</additionalAppResources>
+
+                    <jvmArgs>
+                        <jvmArg>-Dappbase=${getdown.appBase}</jvmArg>
+                        <jvmArg>-Dappdir=C:/ProgramData/${project.name}/</jvmArg>
+                    </jvmArgs>
+                    <arg
+
+                </configuration>
+
+                <!--This tells Maven to include this plugin's tasks into it's normal lifecycle. This allows you
+                to use `mvn package` to create an installer instead of having to specifically call `mvn jfx:native`-->
                 <executions>
                     <execution>
+                        <!-- required before build-native -->
+                        <id>create-jfxjar</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>generate-headerfile</goal>
-                            <goal>make</goal>
+                            <goal>build-jar</goal>
                         </goals>
-                        <configuration>
-                            <!--Default Value: C:/Program Files/NSIS/makensis.exe-->
-                            <makensisBin>C:/Program Files (x86)/NSIS/makensis.exe</makensisBin>
-                            <!--The name of the installer-->
-                            <outputFile>${project.name}-installer.exe</outputFile>
-                            <!--Configures the NSIS installer. See NSIS documentation.-->
-                            <scriptFile>src/main/nsis/installationConfiguration.nsi</scriptFile>
-                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-native</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build-native</goal>
+                        </goals>
                     </execution>
                 </executions>
+
             </plugin>
+
         </plugins>
     </build>
 
     <pluginRepositories>
+        <!--This tells Maven where to find the getdown-maven-plugin-->
         <pluginRepository>
             <id>getdown-maven-plugin-mvn-repo</id>
             <url>https://raw.github.com/rockfireredmoon/getdown-maven-plugin/mvn-repo/</url>
@@ -124,5 +159,14 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.jfoenix/jfoenix -->
+        <dependency>
+            <groupId>com.jfoenix</groupId>
+            <artifactId>jfoenix</artifactId>
+            <version>8.0.8</version>
+        </dependency>
+    </dependencies>
 
 </project>

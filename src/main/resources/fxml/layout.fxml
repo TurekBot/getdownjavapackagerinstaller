@@ -6,12 +6,43 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextArea?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="somePackage.Controller"
             prefHeight="400.0" prefWidth="600.0">
     <top>
-        <Label text="Hello World."/>
+        <VBox>
+            <Label text="Hello World."/>
+            <Label text="It's me your friend the updatable app."/>
+            <Label text="I'm here to save the freakin' day."/>
+            <JFXTextArea promptText="What do you think of that?"/>
+        </VBox>
     </top>
+    <center>
+        <GridPane alignment="center" hgap="10" vgap="10">
+            <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
+            <Text text="Welcome"
+                  GridPane.columnIndex="0" GridPane.rowIndex="0"
+                  GridPane.columnSpan="2"/>
+
+            <Label text="User Name:"
+                   GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+            <JFXTextField
+                    GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+            <Label text="Password:"
+                   GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+            <JFXPasswordField fx:id="passwordField"
+                              GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+        </GridPane>
+    </center>
 
 </BorderPane>
