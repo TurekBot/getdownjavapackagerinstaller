@@ -40,7 +40,7 @@
             <plugin>
                 <groupId>org.icestuff</groupId>
                 <artifactId>getdown-maven-plugin</artifactId>
-                <version>0.0.3-SNAPSHOT</version>
+                <version>1.0.0-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -108,6 +108,10 @@
                         <systemWide>true</systemWide>
                         <!--Tells the packager to make a desktop shortcut when installing.-->
                         <!--<shortcutHint>true</shortcutHint>-->
+                        <!--This argument is crucial. It tells the installer generator which jar the class to
+                        launch is in. If you don't specify, it assumes your main class is in the jar it's creating
+                        for you.-->
+                        <mainJar>getdown.jar</mainJar>
                     </bundleArguments>
 
 
@@ -119,7 +123,6 @@
                         <jvmArg>-Dappbase=${getdown.appBase}</jvmArg>
                         <jvmArg>-Dappdir=C:/ProgramData/${project.name}/</jvmArg>
                     </jvmArgs>
-                    <arg
 
                 </configuration>
 
@@ -148,17 +151,18 @@
         </plugins>
     </build>
 
-    <pluginRepositories>
+    <!--<pluginRepositories>-->
         <!--This tells Maven where to find the getdown-maven-plugin-->
-        <pluginRepository>
-            <id>getdown-maven-plugin-mvn-repo</id>
-            <url>https://raw.github.com/rockfireredmoon/getdown-maven-plugin/mvn-repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
+        <!--This is commented out for now because we're using the locally installed version of this plugin.-->
+        <!--<pluginRepository>-->
+            <!--<id>getdown-maven-plugin-mvn-repo</id>-->
+            <!--<url>https://raw.github.com/rockfireredmoon/getdown-maven-plugin/mvn-repo/</url>-->
+            <!--<snapshots>-->
+                <!--<enabled>true</enabled>-->
+                <!--<updatePolicy>always</updatePolicy>-->
+            <!--</snapshots>-->
+        <!--</pluginRepository>-->
+    <!--</pluginRepositories>-->
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.jfoenix/jfoenix -->
